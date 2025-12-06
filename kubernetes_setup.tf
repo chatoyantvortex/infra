@@ -2,7 +2,7 @@ resource "null_resource" "install_k3s" {
   # Always check and install if needed
   provisioner "local-exec" {
     interpreter = ["/bin/bash", "-c"]
-    command = <<-EOT
+    command     = <<-EOT
       set -e
 
       echo "[k3s] Checking if k3s is already installed..."
@@ -45,5 +45,5 @@ resource "kubernetes_namespace" "apps" {
     name = "apps"
   }
 
-  depends_on = [null_resource "install_k3s"]
+  depends_on = [null_resource, "install_k3s"]
 }
