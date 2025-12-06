@@ -1,3 +1,4 @@
+# versions.tf
 terraform {
   required_version = ">= 1.5.0"
 
@@ -11,12 +12,4 @@ terraform {
       version = "~> 3.0"
     }
   }
-}
-
-provider "kubernetes" {
-  config_path = pathexpand("~/.kube/config")
-}
-
-provider "docker" {
-  host = "unix:///var/run/docker.sock"
 }

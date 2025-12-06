@@ -1,4 +1,4 @@
-# Re-use docker provider and make sure Docker is installed first
+# Nginx container
 data "docker_registry_image" "nginx" {
   name = "nginx:latest"
 }
@@ -6,8 +6,6 @@ data "docker_registry_image" "nginx" {
 resource "docker_image" "nginx" {
   name          = data.docker_registry_image.nginx.name
   pull_triggers = [data.docker_registry_image.nginx.sha256_digest]
-
-  depends_on = [null_resource.install_docker]
 }
 
 resource "docker_container" "nginx" {
@@ -20,11 +18,10 @@ resource "docker_container" "nginx" {
   }
 
   restart = "always"
-
-  depends_on = [docker_image.nginx]
 }
 
-# Example: PostgreSQL container
+
+# PostgreSQL container
 data "docker_registry_image" "postgres" {
   name = "postgres:16-alpine"
 }
@@ -32,8 +29,6 @@ data "docker_registry_image" "postgres" {
 resource "docker_image" "postgres" {
   name          = data.docker_registry_image.postgres.name
   pull_triggers = [data.docker_registry_image.postgres.sha256_digest]
-
-  depends_on = [null_resource.install_docker]
 }
 
 resource "docker_container" "postgres" {
@@ -53,11 +48,14 @@ resource "docker_container" "postgres" {
 
   restart = "always"
 
-  # Optional: persist data
   volumes {
     host_path      = "/opt/postgres-data"
     container_path = "/var/lib/postgresql/data"
   }
 
-  depends_on = [docker_image.postgres]
+  # Ensure directory exists (you may create it via cloud-init or manually)
+  provisioner "local-exec" {
+    when    = create
+    command = "sudo mkdir -p /opt/postgres-data && sudo chown 999:999 /opt/postgres-data"
+  }
 }
