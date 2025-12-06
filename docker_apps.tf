@@ -79,7 +79,8 @@ resource "docker_container" "pythonapi" {
   name  = "pythonapi"
   image = docker_image.pythonapi.name
 
-  must_run = true
+  must_run      = true
+  force_destroy = true
 
   lifecycle {
     replace_triggered_by = [
@@ -99,3 +100,4 @@ resource "docker_container" "pythonapi" {
     "DATABASE_URL=postgresql://appuser:secretpassword@postgres-db:5432/appdb",
   ]
 }
+
