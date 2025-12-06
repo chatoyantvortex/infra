@@ -12,6 +12,14 @@ resource "docker_container" "nginx" {
   name  = "nginx-web"
   image = docker_image.nginx.name
 
+  must_run = true
+
+  lifecycle {
+    replace_triggered_by = [
+      docker_image.pythonapi
+    ]
+  }
+
   ports {
     internal = 80
     external = 8081
@@ -40,6 +48,14 @@ resource "docker_container" "postgres" {
     "POSTGRES_PASSWORD=secretpassword",
     "POSTGRES_DB=appdb",
   ]
+
+  must_run = true
+
+  lifecycle {
+    replace_triggered_by = [
+      docker_image.pythonapi
+    ]
+  }
 
   ports {
     internal = 5432
