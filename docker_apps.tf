@@ -77,6 +77,9 @@ resource "docker_container" "pythonapi" {
   name  = "pythonapi"
   image = docker_image.pythonapi.name
 
+  must_run = true
+  recreate = true
+
   ports {
     internal = 8000
     external = 8000
