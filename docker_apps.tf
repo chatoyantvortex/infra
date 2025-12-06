@@ -64,10 +64,8 @@ resource "docker_container" "postgres" {
 # FastAPI backend container
 # ============================
 
-# Image pushed by the FastAPI app repo to GitHub Container Registry
 data "docker_registry_image" "fastapi_backend" {
-  # Convention: ghcr.io/<owner>/<repo>:latest
-  name = "ghcr.io/amirtharajvellingiri5/fastapi-backend:latest"
+  name = "vishnukanthmca/fastapi-backend:latest"
 }
 
 resource "docker_image" "fastapi_backend" {
@@ -79,7 +77,6 @@ resource "docker_container" "fastapi_backend" {
   name  = "fastapi-backend"
   image = docker_image.fastapi_backend.name
 
-  # Change internal port if your app listens somewhere else
   ports {
     internal = 8000
     external = 8000
@@ -87,15 +84,10 @@ resource "docker_container" "fastapi_backend" {
 
   restart = "always"
 
-  # Example envs – adjust to your real config
   env = [
     "ENV=prod",
     "DATABASE_URL=postgresql://appuser:secretpassword@postgres-db:5432/appdb",
   ]
-
-  # If you want it on a custom Docker network shared with nginx/postgres:
-  # networks_advanced {
-  #   name = "app-network"
-  # }
 }
+
 
