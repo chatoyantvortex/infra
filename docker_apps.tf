@@ -60,11 +60,9 @@ resource "docker_container" "postgres" {
   }
 }
 
-
-# ============================
+# ============================ 
 # FastAPI backend container
-# ============================
-
+# ============================ 
 data "docker_registry_image" "pythonapi" {
   name = "vishnukanthmca/pythonapi:latest"
 }
@@ -74,13 +72,10 @@ resource "docker_image" "pythonapi" {
   pull_triggers = [data.docker_registry_image.pythonapi.sha256_digest]
 }
 
-
 resource "docker_container" "pythonapi" {
-  name  = "pythonapi"
-  image = docker_image.pythonapi.name
-
-  must_run      = true
-  force_destroy = true
+  name     = "pythonapi"
+  image    = docker_image.pythonapi.name
+  must_run = true
 
   lifecycle {
     replace_triggered_by = [
@@ -100,4 +95,3 @@ resource "docker_container" "pythonapi" {
     "DATABASE_URL=postgresql://appuser:secretpassword@postgres-db:5432/appdb",
   ]
 }
-
