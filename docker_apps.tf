@@ -87,7 +87,7 @@ resource "docker_container" "fastapi_backend" {
 
   restart = "always"
 
-  # Example envs – adjust to your real config
+  # Example envs – adjust to your real config -
   env = [
     "ENV=prod",
     "DATABASE_URL=postgresql://appuser:secretpassword@postgres-db:5432/appdb",
