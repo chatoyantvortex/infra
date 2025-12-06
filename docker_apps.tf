@@ -60,9 +60,20 @@ resource "docker_container" "postgres" {
   }
 }
 
+
 # ============================
 # FastAPI backend container
 # ============================
+
+data "docker_registry_image" "pythonapi" {
+  name = "vishnukanthmca/pythonapi:latest"
+}
+
+resource "docker_image" "pythonapi" {
+  name          = data.docker_registry_image.pythonapi.name
+  pull_triggers = [data.docker_registry_image.pythonapi.sha256_digest]
+}
+
 
 resource "docker_container" "pythonapi" {
   name  = "pythonapi"
