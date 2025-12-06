@@ -18,7 +18,12 @@ provider "kubernetes" {
 }
 
 provider "docker" {
-  host = "unix:///var/run/docker.sock"
+  registry_auth {
+    address  = "registry-1.docker.io"
+    username = var.dockerhub_username
+    password = var.dockerhub_token
+  }
 }
+
 
 
