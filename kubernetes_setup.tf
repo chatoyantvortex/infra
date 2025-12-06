@@ -45,5 +45,5 @@ resource "kubernetes_namespace" "apps" {
     name = "apps"
   }
 
-  depends_on = [null_resource, "install_k3s"]
+  depends_on = [null_resource.install_k3s]
 }
