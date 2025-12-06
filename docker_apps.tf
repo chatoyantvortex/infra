@@ -64,18 +64,18 @@ resource "docker_container" "postgres" {
 # FastAPI backend container
 # ============================
 
-data "docker_registry_image" "fastapi_backend" {
-  name = "vishnukanthmca/fastapi-backend:latest"
+data "docker_registry_image" "pythonapi" {
+  name = "vishnukanthmca/pythonapi:latest"
 }
 
-resource "docker_image" "fastapi_backend" {
-  name          = data.docker_registry_image.fastapi_backend.name
-  pull_triggers = [data.docker_registry_image.fastapi_backend.sha256_digest]
+resource "docker_image" "pythonapi" {
+  name          = data.docker_registry_image.pythonapi.name
+  pull_triggers = [data.docker_registry_image.pythonapi.sha256_digest]
 }
 
-resource "docker_container" "fastapi_backend" {
-  name  = "fastapi-backend"
-  image = docker_image.fastapi_backend.name
+resource "docker_container" "pythonapi" {
+  name  = "pythonapi"
+  image = docker_image.pythonapi.name
 
   ports {
     internal = 8000
@@ -89,5 +89,4 @@ resource "docker_container" "fastapi_backend" {
     "DATABASE_URL=postgresql://appuser:secretpassword@postgres-db:5432/appdb",
   ]
 }
-
 
