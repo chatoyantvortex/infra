@@ -13,8 +13,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install unzip
-        run: sudo apt-get update && sudo apt-get install -y unzip
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y unzip make
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
@@ -26,12 +28,16 @@ jobs:
           echo "TF_VAR_dockerhub_username=${{ secrets.DOCKERHUB_USERNAME }}" >> $GITHUB_ENV
           echo "TF_VAR_dockerhub_token=${{ secrets.DOCKERHUB_TOKEN }}" >> $GITHUB_ENV
 
-      - name: Terraform Init
+      - name: Initialize Terraform
         run: terraform init
 
       - name: Terraform Plan
         run: terraform plan
 
-      - name: Terraform Apply
+      - name: Deploy Infrastructure
         if: github.ref == 'refs/heads/main'
-        run: terraform apply -auto-approve
+        run: make deploy
+
+      - name: Cleanup on Failure
+        if: failure()
+        run: make cleanup
