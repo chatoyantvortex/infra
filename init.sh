@@ -9,3 +9,4 @@ curl -sfL https://get.k3s.io | sh -
 sudo chown ubuntu:ubuntu /etc/rancher/k3s/k3s.yaml
 mkdir -p /home/ubuntu/.kube
 cp /etc/rancher/k3s/k3s.yaml /home/ubuntu/.kube/config
+
