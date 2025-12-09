@@ -4,10 +4,10 @@ resource "kubernetes_namespace" "apps" {
   }
 
   lifecycle {
+    prevent_destroy = true
+
     ignore_changes = [
       metadata,
-      spec,
     ]
-    prevent_destroy = true
   }
 }
