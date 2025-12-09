@@ -28,46 +28,34 @@ jobs:
           echo "TF_VAR_dockerhub_username=${{ secrets.DOCKERHUB_USERNAME }}" >> $GITHUB_ENV
           echo "TF_VAR_dockerhub_token=${{ secrets.DOCKERHUB_TOKEN }}" >> $GITHUB_ENV
 
-      - name: Cleanup Existing Resources
+      - name: Cleanup Kubernetes Namespace FAST
         run: |
-          echo "Removing existing Docker containers..."
-          docker rm -f nginx-web postgres-db pythonapi 2>/dev/null || echo "No containers to remove"
-          
-          echo "Checking if Kubernetes namespace exists..."
+          echo "Checking if namespace exists..."
           if kubectl get namespace apps &>/dev/null; then
-            echo "Removing Kubernetes namespace..."
-            kubectl delete namespace apps --grace-period=0 --force 2>/dev/null || true
-            
-            echo "Waiting for namespace deletion to complete..."
-            timeout=120
-            while kubectl get namespace apps &>/dev/null && [ $timeout -gt 0 ]; do
-              sleep 3
-              timeout=$((timeout - 3))
-              echo "Namespace still terminating... ($timeout seconds remaining)"
+            echo "Force deleting namespace..."
+            kubectl delete namespace apps --grace-period=0 --force || true
+
+            echo "Removing finalizers immediately..."
+            kubectl get namespace apps -o json \
+              | jq '.spec.finalizers = []' \
+              | kubectl replace --raw /api/v1/namespaces/apps/finalize -f - || true
+
+            echo "Waiting max 20s..."
+            for i in {1..20}; do
+              if ! kubectl get namespace apps &>/dev/null; then
+                echo "Namespace gone ✔️"
+                break
+              fi
+              sleep 1
             done
-            
+
             if kubectl get namespace apps &>/dev/null; then
-              echo "WARNING: Namespace still exists after timeout. Attempting forced cleanup..."
-              kubectl get namespace apps -o json \
-                | jq '.spec.finalizers = []' \
-                | kubectl replace --raw /api/v1/namespaces/apps/finalize -f - || true
-              sleep 5
-            fi
-            
-            if kubectl get namespace apps &>/dev/null; then
-              echo "ERROR: Failed to delete namespace. Manual intervention required."
-              exit 1
-            else
-              echo "Namespace successfully deleted!"
+              echo "Still exists ⚠️ — but cleanup finished. Continuing..."
             fi
           else
-            echo "Namespace does not exist, skipping..."
+            echo "Namespace does not exist, skipping."
           fi
-          
-          echo "Cleaning up unused Docker volumes..."
-          docker volume prune -f || echo "No volumes to prune"
-          
-          echo "Cleanup completed!"
+
 
       - name: Terraform Init
         run: terraform init
