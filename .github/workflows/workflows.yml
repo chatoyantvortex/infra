@@ -40,6 +40,13 @@ jobs:
 
           echo "All resources wiped. Namespace still intact!"
 
+
+      - name: Cleanup Existing Docker containers
+        run: |
+          echo "Cleaning up Docker containers..."
+          docker rm -f nginx-web postgres-db pythonapi 2>/dev/null || true
+          echo "Cleanup done."
+
       - name: Terraform Init
         run: terraform init
 
