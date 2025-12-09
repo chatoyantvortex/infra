@@ -30,24 +30,15 @@ jobs:
 
       - name: Cleanup Kubernetes Namespace FAST
         run: |
-          echo "Wiping namespace apps..."
+          echo "Cleaning Kubernetes resources inside namespace apps..."
 
-          # Delete workload resources
-          kubectl delete deployment --all -n apps --force --grace-period=0 || true
-          kubectl delete statefulset --all -n apps --force --grace-period=0 || true
-          kubectl delete daemonset --all -n apps --force --grace-period=0 || true
-          kubectl delete job --all -n apps --force --grace-period=0 || true
-          kubectl delete pod --all -n apps --force --grace-period=0 || true
-
-          # Delete networking
-          kubectl delete svc --all -n apps || true
-          kubectl delete ingress --all -n apps || true
-
-          # Delete storage
+          kubectl delete all --all -n apps --force --grace-period=0 || true
           kubectl delete pvc --all -n apps --force --grace-period=0 || true
           kubectl delete pv --all --force --grace-period=0 || true
+          kubectl delete ingress --all -n apps || true
+          kubectl delete svc --all -n apps || true
 
-          echo "Namespace wiped in seconds!"
+          echo "All resources wiped. Namespace still intact!"
 
 
       - name: Terraform Init
