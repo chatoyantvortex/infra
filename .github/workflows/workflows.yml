@@ -30,31 +30,24 @@ jobs:
 
       - name: Cleanup Kubernetes Namespace FAST
         run: |
-          echo "Checking if namespace exists..."
-          if kubectl get namespace apps &>/dev/null; then
-            echo "Force deleting namespace..."
-            kubectl delete namespace apps --grace-period=0 --force || true
+          echo "Wiping namespace apps..."
 
-            echo "Removing finalizers immediately..."
-            kubectl get namespace apps -o json \
-              | jq '.spec.finalizers = []' \
-              | kubectl replace --raw /api/v1/namespaces/apps/finalize -f - || true
+          # Delete workload resources
+          kubectl delete deployment --all -n apps --force --grace-period=0 || true
+          kubectl delete statefulset --all -n apps --force --grace-period=0 || true
+          kubectl delete daemonset --all -n apps --force --grace-period=0 || true
+          kubectl delete job --all -n apps --force --grace-period=0 || true
+          kubectl delete pod --all -n apps --force --grace-period=0 || true
 
-            echo "Waiting max 20s..."
-            for i in {1..20}; do
-              if ! kubectl get namespace apps &>/dev/null; then
-                echo "Namespace gone ✔️"
-                break
-              fi
-              sleep 1
-            done
+          # Delete networking
+          kubectl delete svc --all -n apps || true
+          kubectl delete ingress --all -n apps || true
 
-            if kubectl get namespace apps &>/dev/null; then
-              echo "Still exists ⚠️ — but cleanup finished. Continuing..."
-            fi
-          else
-            echo "Namespace does not exist, skipping."
-          fi
+          # Delete storage
+          kubectl delete pvc --all -n apps --force --grace-period=0 || true
+          kubectl delete pv --all --force --grace-period=0 || true
+
+          echo "Namespace wiped in seconds!"
 
 
       - name: Terraform Init
