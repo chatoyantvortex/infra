@@ -40,7 +40,6 @@ jobs:
 
           echo "All resources wiped. Namespace still intact!"
 
-
       - name: Terraform Init
         run: terraform init
 
