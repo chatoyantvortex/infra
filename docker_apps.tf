@@ -111,3 +111,39 @@ resource "docker_container" "pythonapi" {
     "DATABASE_URL=postgresql://appuser:secretpassword@postgres-db:5432/appdb",
   ]
 }
+
+# ============================ 
+# FastAPI backend container for inventory
+# ============================ 
+data "docker_registry_image" "pythonapi_inventory" {
+  name = "vishnukanthmca/pythonapi_inventory:latest"
+}
+
+resource "docker_image" "pythonapi_inventory" {
+  name          = data.docker_registry_image.pythonapi_inventory.name
+  pull_triggers = [data.docker_registry_image.pythonapi_inventory.sha256_digest]
+}
+
+resource "docker_container" "pythonapi_inventory" {
+  name     = "pythonapi_inventory"
+  image    = docker_image.pythonapi_inventory.name
+  must_run = true
+
+  lifecycle {
+    replace_triggered_by = [
+      docker_image.pythonapi_inventory
+    ]
+  }
+
+  ports {
+    internal = 8001
+    external = 8001
+  }
+
+  restart = "always"
+
+  env = [
+    "ENV=prod",
+    "DATABASE_URL=postgresql://appuser:secretpassword@postgres-db:5432/appdb",
+  ]
+}
