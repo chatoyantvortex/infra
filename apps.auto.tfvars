@@ -1,18 +1,41 @@
 apps = {
   nginx-web = {
-    image = "vishnukanthmca/nginx-web:latest"
-    port  = 8085
+    image = "***/nginx-web:latest"
+    ports = [
+      {
+        internal = 8085
+        external = 8085
+      }
+    ]
   }
+
   postgres-db = {
     image = "postgres:16"
-    port  = 5432
+    ports = [
+      {
+        internal = 5432
+        external = 5432
+      }
+    ]
   }
+
   pythonapi = {
-    image = "vishnukanthmca/pythonapi:latest"
-    port  = 8080
+    image = "***/pythonapi:latest"
+    ports = [
+      {
+        internal = 8080
+        external = 8080
+      }
+    ]
   }
+
   pythonapi_inventory = {
-    image = "vishnukanthmca/pythonapi_inventory:latest"
-    port  = 8081
+    image = "***/pythonapi_inventory:latest"
+    ports = [
+      {
+        internal = 8081
+        external = 8081
+      }
+    ]
   }
 }
