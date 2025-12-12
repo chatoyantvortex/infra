@@ -14,8 +14,10 @@ terraform {
 }
 
 provider "kubernetes" {
-  config_path = pathexpand("~/.kube/config")
+  config_path            = pathexpand("~/.kube/config")
+  config_context_cluster = null
 }
+
 
 provider "docker" {
   registry_auth {
@@ -24,6 +26,7 @@ provider "docker" {
     password = var.dockerhub_token
   }
 }
+
 
 
 

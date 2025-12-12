@@ -5,6 +5,10 @@ on:
     branches: [main]
   workflow_dispatch:
 
+env:
+  # Define apps only once here
+  APPS: "nginx-web postgres-db pythonapi pythonapi_inventory"
+
 jobs:
   terraform:
     runs-on: self-hosted
@@ -40,11 +44,12 @@ jobs:
 
           echo "All resources wiped. Namespace still intact!"
 
-
       - name: Cleanup Existing Docker containers
         run: |
           echo "Cleaning up Docker containers..."
-          docker rm -f nginx-web postgres-db pythonapi 2>/dev/null || true
+          for app in $APPS; do
+            docker rm -f "$app" 2>/dev/null || true
+          done
           echo "Cleanup done."
 
       - name: Terraform Init
@@ -65,8 +70,16 @@ jobs:
           echo "=========================================="
           echo ""
           echo "Docker Containers:"
-          docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}" \
-            | grep -E "nginx-web|postgres-db|pythonapi" || echo "No containers found"
+          docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
+
+          echo ""
+          echo "Checking expected apps:"
+          for app in $APPS; do
+            docker ps --format '{{.Names}}' | grep -w "$app" \
+              && echo "$app is running" \
+              || echo "$app NOT found"
+          done
+
           echo ""
           echo "Kubernetes Namespace:"
           kubectl get namespace apps 2>/dev/null || echo "Namespace not found"
@@ -77,6 +90,8 @@ jobs:
         if: failure()
         run: |
           echo "Deployment failed. Cleaning up partial resources..."
-          docker rm -f nginx-web postgres-db pythonapi 2>/dev/null || true
+          for app in $APPS; do
+            docker rm -f "$app" 2>/dev/null || true
+          done
           kubectl delete namespace apps --timeout=30s 2>/dev/null || true
           echo "Cleanup completed!"
