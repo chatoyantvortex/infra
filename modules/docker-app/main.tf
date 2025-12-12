@@ -1,4 +1,3 @@
-
 data "docker_registry_image" "apps" {
   for_each = var.apps
   name     = each.value.image

@@ -1,5 +1,5 @@
 variable "apps" {
-  description = "Map of application definitions for container deployment."
+  description = "Application definitions for Docker deployment"
   type = map(object({
     image = string
     ports = list(object({
