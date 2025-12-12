@@ -1,13 +1,4 @@
 apps = {
-  nginx-web = {
-    image = "***/nginx-web:latest"
-    ports = [
-      {
-        internal = 8085
-        external = 8085
-      }
-    ]
-  }
 
   postgres-db = {
     image = "postgres:16"

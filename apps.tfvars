@@ -1,9 +1,4 @@
 apps = {
-  nginx-web = {
-    image = "nginx:latest"
-    ports = [{ internal = 80, external = 8081 }]
-    env   = []
-  }
 
   postgres-db = {
     image = "postgres:16-alpine"

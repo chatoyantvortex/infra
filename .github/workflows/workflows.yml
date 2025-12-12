@@ -7,7 +7,7 @@ on:
 
 env:
   # Define apps only once here
-  APPS: "nginx-web postgres-db pythonapi pythonapi_inventory"
+  APPS: "postgres-db pythonapi pythonapi_inventory"
 
 jobs:
   terraform:

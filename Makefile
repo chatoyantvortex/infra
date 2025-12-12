@@ -1,7 +1,7 @@
 .PHONY: cleanup apply deploy destroy status
 
 # Define all apps ONCE here
-APPS = nginx-web postgres-db pythonapi pythonapi_inventory
+APPS = postgres-db pythonapi pythonapi_inventory
 
 # Clean up existing resources
 cleanup:
