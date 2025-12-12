@@ -11,7 +11,7 @@ apps = {
   }
 
   pythonapi = {
-    image = "***/pythonapi:latest"
+    image = "vishnukanthmca/pythonapi:latest"
     ports = [
       {
         internal = 8080
@@ -21,7 +21,7 @@ apps = {
   }
 
   pythonapi_inventory = {
-    image = "***/pythonapi_inventory:latest"
+    image = "vishnukanthmca/pythonapi_inventory:latest"
     ports = [
       {
         internal = 8081
@@ -29,4 +29,5 @@ apps = {
       }
     ]
   }
+
 }
