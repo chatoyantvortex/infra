@@ -59,6 +59,20 @@ jobs:
       - name: Terraform Init
         run: terraform init
 
+      - name: Import namespace if exists
+        run: |
+          if kubectl get namespace apps &> /dev/null; then
+            echo "Namespace 'apps' exists, checking Terraform state..."
+            if ! terraform state list | grep -q "kubernetes_namespace.apps"; then
+              echo "Importing namespace into Terraform state..."
+              terraform import kubernetes_namespace.apps apps || true
+            else
+              echo "Namespace already in Terraform state"
+            fi
+          else
+            echo "Namespace 'apps' does not exist, Terraform will create it"
+          fi
+
       - name: Terraform Plan
         run: terraform plan
 
