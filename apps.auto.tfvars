@@ -14,8 +14,8 @@ apps = {
     image = "vishnukanthmca/pythonapi:latest"
     ports = [
       {
-        internal = 8080
-        external = 8080
+        internal = 8000 # Uvicorn port inside container
+        external = 8080 # Public port on the server
       }
     ]
   }
@@ -24,8 +24,8 @@ apps = {
     image = "vishnukanthmca/pythonapi_inventory:latest"
     ports = [
       {
-        internal = 8081
-        external = 8081
+        internal = 8001 # Uvicorn port inside container
+        external = 8081 # Public port on the server
       }
     ]
   }
